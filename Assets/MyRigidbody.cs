@@ -154,7 +154,7 @@ public class MyRigidbody:MonoBehaviour{
 		return Vector3.zero;
 	}
 
-	void ApplyForce(Vector3 f, Vector3 at)
+	public void ApplyForce(Vector3 f, Vector3 at)
 	{
 		m_forceAccumulator += f;
   		m_torqueAccumulator += Vector3.Cross((at - m_globalCentroid),f);
