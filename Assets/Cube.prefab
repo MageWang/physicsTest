@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c100fabc1566a9244afb697830efd059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_mass: 0
+  m_mass: 1
   m_inverseMass: 0
   m_localInverseInertiaTensor:
     e00: 0
@@ -230,6 +230,8 @@ MonoBehaviour:
     e32: 0
     e33: 0
   m_localCentroid: {x: 0, y: 0, z: 0}
+  m_body: {fileID: 0}
   height: 1
   width: 1
   depth: 1
+  points: []

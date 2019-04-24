@@ -92,6 +92,7 @@ public class MyRigidbody:MonoBehaviour{
 	{
 		// add collider to collider list
 		m_colliders.Add(collider);
+		collider.m_body = this;
 		
 		// reset local centroid & mass
 		m_localCentroid = Vector3.zero;
@@ -171,7 +172,10 @@ public class MyRigidbody:MonoBehaviour{
 	// Update is called once per frame
 	void Update () 
 	{
-		ApplyForce(new Vector3(0,-1,0), Vector3.zero);
+		if(transform.hasChanged){
+			UpdateGlobalCentroidFromPosition();
+		}
+		//ApplyForce(new Vector3(0,-1,0), Vector3.zero);
 		// integrate linear velocity
 		this.m_linearVelocity += 
 			this.m_inverseMass

@@ -16,8 +16,8 @@ public class Cannon : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(isShot){
-			isShot = false;
-			for(var i = 0; i < count; i++){
+			//isShot = false;
+			for(var i = 0; i < count*Time.deltaTime/100; i++){
 				var obj = GameObject.Instantiate(bullet);
 				obj.transform.position = this.transform.position;
 				var myRigidbody = obj.GetComponent<MyRigidbody>();
