@@ -19,8 +19,10 @@ public class MyAABB : MonoBehaviour {
 	
 	private bool isInit = false;
 	void Init(){
+		if(isInit)return;
 		if(BroadPhase.GetInstance()==null)return;
 		BroadPhase.GetInstance().Add(this);
+		isInit=true;
 	}
 	void DeInit(){
 		if(BroadPhase.GetInstance()==null)return;
@@ -51,86 +53,91 @@ public class MyAABB : MonoBehaviour {
 
 	public bool TestRay(Ray3 ray){
 		Vector3 v;
-		return HitBoundingBox(min, max, ray.pos, ray.dir, out v);
+
+		// TODO : transform ray to local position
+		//Ray3 localRay;
+		//localRay = new Ray3();
+		
+		return HitBoundingBox(transform.position + min, transform.position + max, ray.pos, ray.dir, out v);
 	}
 
-	bool HitBoundingBox(Vector3 minB, Vector3 maxB, Vector3 origin, Vector3 dir, out Vector3 coord)
+	public static bool HitBoundingBox(Vector3 minB, Vector3 maxB, Vector3 origin, Vector3 dir, out Vector3 coord)
 		// double minB[NUMDIM], maxB[NUMDIM];		/*box */
 		// double origin[NUMDIM], dir[NUMDIM];		/*ray */
 		// double coord[NUMDIM];				/* hit point */
 	{
-			const short RIGHT = 0;
-			const short LEFT = 1;
-			const short MIDDLE = 2;
-			const short NUMDIM = 3;
+		const short RIGHT = 0;
+		const short LEFT = 1;
+		const short MIDDLE = 2;
+		const short NUMDIM = 3;
 
-			coord = new Vector3();
-			bool inside = true;
-			short[] quadrant = new short[3];
-			int whichPlane;
-			float [] maxT= new float[3];
-			float [] candidatePlane = new float[3];
+		coord = new Vector3();
+		bool inside = true;
+		short[] quadrant = new short[3];
+		int whichPlane;
+		float [] maxT= new float[3];
+		float [] candidatePlane = new float[3];
 
-			/* Find candidate planes; this loop can be avoided if
-			rays cast all from the eye(assume perpsective view) */
-			for (var i=0; i<NUMDIM; i++)
-			{
-				if(origin[i] < minB[i]) {
-					quadrant[i] = LEFT;
-					candidatePlane[i] = minB[i];
-					inside = false;
-				}else if (origin[i] > maxB[i]) {
-					quadrant[i] = RIGHT;
-					candidatePlane[i] = maxB[i];
-					inside = false;
-				}else	{
-					quadrant[i] = MIDDLE;
-				}
+		/* Find candidate planes; this loop can be avoided if
+		rays cast all from the eye(assume perpsective view) */
+		for (var i=0; i<NUMDIM; i++)
+		{
+			if(origin[i] < minB[i]) {
+				quadrant[i] = LEFT;
+				candidatePlane[i] = minB[i];
+				inside = false;
+			}else if (origin[i] > maxB[i]) {
+				quadrant[i] = RIGHT;
+				candidatePlane[i] = maxB[i];
+				inside = false;
+			}else	{
+				quadrant[i] = MIDDLE;
 			}
-
-			/* Ray origin inside bounding box */
-			if(inside)	{
-				coord = origin;
-				return true;
-			}
-
-
-			/* Calculate T distances to candidate planes */
-			for (var i = 0; i < NUMDIM; i++)
-			{
-				if (quadrant[i] != MIDDLE && dir[i] !=0)
-					maxT[i] = (candidatePlane[i]-origin[i]) / dir[i];
-				else
-					maxT[i] = -1;
-			}
-			/* Get largest of the maxT's for final choice of intersection */
-			whichPlane = 0;
-			for (var i = 1; i < NUMDIM; i++)
-			{
-				if (maxT[whichPlane] < maxT[i])
-					whichPlane = i;
-			}
-
-			/* Check final candidate actually inside box */
-			if (maxT[whichPlane] < 0)
-			{
-				 return false;
-			}
-
-			for (var i = 0; i < NUMDIM; i++)
-			{
-				if (whichPlane != i) {
-					coord[i] = origin[i] + maxT[whichPlane] *dir[i];
-					if (coord[i] < minB[i] || coord[i] > maxB[i])
-						return false;
-				} 
-				else {
-					coord[i] = candidatePlane[i];
-				}
-			}
-
-			return true;				/* ray hits box */
 		}
+
+		/* Ray origin inside bounding box */
+		if(inside)	{
+			coord = origin;
+			return true;
+		}
+
+
+		/* Calculate T distances to candidate planes */
+		for (var i = 0; i < NUMDIM; i++)
+		{
+			if (quadrant[i] != MIDDLE && dir[i] !=0)
+				maxT[i] = (candidatePlane[i]-origin[i]) / dir[i];
+			else
+				maxT[i] = -1;
+		}
+		/* Get largest of the maxT's for final choice of intersection */
+		whichPlane = 0;
+		for (var i = 1; i < NUMDIM; i++)
+		{
+			if (maxT[whichPlane] < maxT[i])
+				whichPlane = i;
+		}
+
+		/* Check final candidate actually inside box */
+		if (maxT[whichPlane] < 0)
+		{
+				return false;
+		}
+
+		for (var i = 0; i < NUMDIM; i++)
+		{
+			if (whichPlane != i) {
+				coord[i] = origin[i] + maxT[whichPlane] *dir[i];
+				if (coord[i] < minB[i] || coord[i] > maxB[i])
+					return false;
+			} 
+			else {
+				coord[i] = candidatePlane[i];
+			}
+		}
+
+		return true;				/* ray hits box */
+	}
 
 	// Use this for initialization
 	void Start () {

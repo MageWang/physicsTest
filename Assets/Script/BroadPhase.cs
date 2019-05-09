@@ -6,11 +6,12 @@ public class ColliderPair{
 	public MyCollider a, b;
 }
 
+[System.Serializable]
 public class Ray3{
 	public Vector3 pos, dir;
 }
 
-
+[System.Serializable]
 public class RayCastResult
 {
   public bool hit;

@@ -25,4 +25,10 @@ public class MyCollider : MonoBehaviour {
 		normal = Vector3.zero;
 		return false;
 	}
+
+	virtual public void DebugDraw(Color c){
+		Debug.DrawLine(transform.position+m_localCentroid, transform.position+m_localCentroid + Vector3.up, c);
+		Debug.DrawLine(transform.position+m_localCentroid, transform.position+m_localCentroid + Vector3.left, c);
+		Debug.DrawLine(transform.position+m_localCentroid, transform.position+m_localCentroid + Vector3.forward, c);
+	}
 }
